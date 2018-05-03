@@ -50,6 +50,7 @@ references:
         docker build -f ci-images/node6/Dockerfile -t quay.io/reactiveops/ci-images:$DOCKER_BASE_TAG-node6 .
         docker build -f ci-images/stretch/Dockerfile -t quay.io/reactiveops/ci-images:$DOCKER_BASE_TAG-stretch .
         docker build -f ci-images/alpine/Dockerfile -t quay.io/reactiveops/ci-images:$DOCKER_BASE_TAG-alpine .
+        docker build -f ci-images/img-experimental/Dockerfile -t quay.io/reactiveops/ci-images:$DOCKER_BASE_TAG-img-experimental .
 
   docker_push: &docker_push
     run:
@@ -58,6 +59,7 @@ references:
         docker push quay.io/reactiveops/ci-images:$DOCKER_BASE_TAG-node6
         docker push quay.io/reactiveops/ci-images:$DOCKER_BASE_TAG-stretch
         docker push quay.io/reactiveops/ci-images:$DOCKER_BASE_TAG-alpine
+        docker push quay.io/reactiveops/ci-images:$DOCKER_BASE_TAG-img-experimental
 
   npm_release: &npm_release
     run:
