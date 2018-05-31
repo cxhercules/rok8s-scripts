@@ -1,9 +1,9 @@
 #!/bin/bash
 
 . k8s-read-config "$@"
+. docker-resolve
 
-if [ -z "$EXTERNAL_REGISTRY_BASE_DOMAIN" ]; then echo EXTERNAL_REGISTRY_BASE_DOMAIN must be set; exit 1; fi
-if [ -z "$REPOSITORY_NAME" ];               then echo REPOSITORY_NAME must be set; exit 1; fi
+if [ -z "$DOCKERTAG" ]; then echo DOCKERTAG must be set; exit 1; fi
 
 # Warm the local docker cache (aka the local docker images) by pulling the previous commit and the images
 # tagged with the current branch, if they exist.
@@ -11,5 +11,5 @@ if [ -z "$REPOSITORY_NAME" ];               then echo REPOSITORY_NAME must be se
 PREVIOUS_COMMIT=$(git rev-parse HEAD~1)
 CI_BRANCH=$(echo "${CI_BRANCH}" | tr / _)
 
-docker pull "${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}:$PREVIOUS_COMMIT" || true
-docker pull "${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}:$CI_BRANCH" || true
+docker pull "${DOCKERTAG}:$PREVIOUS_COMMIT" || true
+docker pull "${DOCKERTAG}:$CI_BRANCH" || true

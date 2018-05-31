@@ -1,12 +1,11 @@
 #!/bin/bash
 
 . k8s-read-config "$@"
+. docker-resolve
 
-if [ -z "$EXTERNAL_REGISTRY_BASE_DOMAIN" ]; then echo EXTERNAL_REGISTRY_BASE_DOMAIN must be set; exit 1; fi
-if [ -z "$REPOSITORY_NAME" ];               then echo REPOSITORY_NAME must be set; exit 1; fi
-if [ -z "$DOCKERTAG" ];                     then echo DOCKERTAG must be set; exit 1; fi
-if [ -z "$CI_SHA1" ];                       then echo CI_SHA1 must be set; exit 1; fi
-if [ -z "$CI_BUILD_NUM" ];                  then echo CI_BUILD_NUM must be set; exit 1; fi
+if [ -z "$DOCKERTAG" ];    then echo DOCKERTAG must be set; exit 1; fi
+if [ -z "$CI_SHA1" ];      then echo CI_SHA1 must be set; exit 1; fi
+if [ -z "$CI_BUILD_NUM" ]; then echo CI_BUILD_NUM must be set; exit 1; fi
 
 # Set a CI_REF from branch or tag
 CI_REF="${CI_TAG}"
@@ -16,15 +15,15 @@ if [ -z "$CI_REF" ]; then echo CI_BRANCH or CI_TAG must be set; exit 1; fi
 
 CI_REF=$(echo "${CI_REF}" | tr / _)
 
-echo "Pushing ${DOCKERTAG}:latest as ${CI_SHA1}, ${CI_REF}, ${CI_BUILD_NUM} to ${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}"
+echo "Pushing ${DOCKERTAG}:latest as ${CI_SHA1}, ${CI_REF}, ${CI_BUILD_NUM} to ${DOCKERTAG}"
 
-docker tag "${DOCKERTAG}:latest" "${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}:${CI_SHA1}"
+docker tag "${DOCKERTAG}:latest" "${DOCKERTAG}:${CI_SHA1}"
 if [ $? -ne 0 ]
 then
   echo "Unable to tag image, aborting"
   exit 1
 fi
-docker push "${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}:${CI_SHA1}"
+docker push "${DOCKERTAG}:${CI_SHA1}"
 if [ $? -ne 0 ]
 then
   echo "Unable to push docker image, aborting."
@@ -41,27 +40,27 @@ then
   DOCKER_TAG_COM="${DOCKER_TAG_COM} -f "
 fi
 
-$DOCKER_TAG_COM "${DOCKERTAG}:latest" "${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}:${CI_REF}"
+$DOCKER_TAG_COM "${DOCKERTAG}:latest" "${DOCKERTAG}:${CI_REF}"
 
 if [ $? -ne 0 ]
 then
   echo "Unable to tag image, aborting"
   exit 1
 fi
-docker push "${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}:${CI_REF}"
+docker push "${DOCKERTAG}:${CI_REF}"
 if [ $? -ne 0 ]
 then
   echo "Unable to push docker image, aborting."
   exit 1
 fi
 
-$DOCKER_TAG_COM "${DOCKERTAG}:latest" "${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}:build_${CI_BUILD_NUM}"
+$DOCKER_TAG_COM "${DOCKERTAG}:latest" "${DOCKERTAG}:build_${CI_BUILD_NUM}"
 if [ $? -ne 0 ]
 then
   echo "Unable to tag image, aborting"
   exit 1
 fi
-docker push "${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}:build_${CI_BUILD_NUM}"
+docker push "${DOCKERTAG}:build_${CI_BUILD_NUM}"
 if [ $? -ne 0 ]
 then
   echo "Unable to push docker image, aborting."

@@ -29,16 +29,8 @@ named `k8s-scripts.config` by default:
 # Dockerfile to build
 DOCKERFILE='Dockerfile'
 
-# External registry domain
-EXTERNAL_REGISTRY_BASE_DOMAIN=quay.io/example-org
-
-# Name of repository/project
-REPOSITORY_NAME='example-app'
-
 # Docker tag that will be created
-# Defaults to concatenation of your external registry + repository name, i.e.:
-# DOCKERTAG=quay.io/example-org/example-app
-DOCKERTAG="${EXTERNAL_REGISTRY_BASE_DOMAIN}/${REPOSITORY_NAME}"
+DOCKERTAG=quay.io/example-org/example-app
 
 # Namespace to work in
 NAMESPACE='default'
@@ -270,8 +262,6 @@ Pushes the recently built image to the registry.
 
 This requires the environment variables:
 
-* `EXTERNAL_REGISTRY_BASE_DOMAIN`
-* `REPOSITORY_NAME`
 * `DOCKERTAG`
 * `CI_SHA1`
 * `CI_BUILD_NUM`
