@@ -137,3 +137,5 @@ CLUSTER_NAME=${CLUSTER_NAME}
 echo "[cluster_name]: $CLUSTER_NAME"
 echo ""
 
+AWS_SECRETS_FILES=()
+expand_files "AWS_SECRETS" "AWS_SECRETS_FILES" "awssecret.yml"
